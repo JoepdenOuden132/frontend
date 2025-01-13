@@ -42,5 +42,3 @@ jobs:
         registry-password: ${{ secrets.AZURE_REGISTRY_PASSWORD }}
         name: aci-frontend
         location: 'northeurope'
-        environment-variables: |
-          FRONTEND_ENV=${{ secrets.FRONTEND_ENV }}
