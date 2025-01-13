@@ -1,44 +1,45 @@
-name: Build and Deploy Frontend Container to Azure
-
-on:
-  push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
+on: [push]
+name: Frontend_Container_Workflow
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-
     steps:
-    # Checkout de repository
-    - name: Checkout code
-      uses: actions/checkout@v2
+    
+    # Stap 1: GitHub-repository ophalen
+    - name: 'Checkout GitHub Action'
+      uses: actions/checkout@main
 
-    # Set up Docker
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v1
-
-    # Log in bij Azure Container Registry (gebruik Azure login)
-    - name: Log in to Azure Container Registry
+    # Stap 2: Inloggen via Azure CLI
+    - name: 'Login via Azure CLI'
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+    
+    # Stap 3: Inloggen bij Azure Container Registry
+    - name: 'Login to Azure Container Registry'
       uses: azure/docker-login@v1
       with:
-        username: ${{ secrets.AZURE_REGISTRY_USERNAME }}
-        password: ${{ secrets.AZURE_REGISTRY_PASSWORD }}
+        login-server: ${{ secrets.REGISTRY_LOGIN_SERVER }}
+        username: ${{ secrets.REGISTRY_USERNAME }}
+        password: ${{ secrets.REGISTRY_PASSWORD }}
+    
+    # Stap 4: Bouw de container en push naar ACR
+    - run: |
+        docker build -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/frontend:${{ github.sha }} ./frontend
+        docker push ${{ secrets.REGISTRY_LOGIN_SERVER }}/frontend:${{ github.sha }}
 
-    # Build frontend container
-    - name: Build frontend container
-      run: |
-        docker build -t ${{ secrets.AZURE_REGISTRY_NAME }}.azurecr.io/frontend:latest ./frontend
-        docker push ${{ secrets.AZURE_REGISTRY_NAME }}.azurecr.io/frontend:latest
-
-    # Deploy to Azure Container Instances (ACI)
-    - name: Deploy frontend to Azure Container Instances
-      run: |
-        az container create --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} \
-                            --name frontend-container \
-                            --image ${{ secrets.AZURE_REGISTRY_NAME }}.azurecr.io/frontend:latest \
-                            --cpu 1 --memory 1.5 --dns-name-label frontend-container \
-                            --port 80 --environment-variables NODE_ENV=production
+    # Stap 5: Deploy de container naar Azure Container Instances (ACI)
+    - name: 'Deploy to Azure Container Instances'
+      uses: azure/aci-deploy@v1
+      with:
+        resource-group: ${{ secrets.RESOURCE_GROUP }}
+        dns-name-label: ${{ secrets.RESOURCE_GROUP }}${{ github.run_number }}
+        image: ${{ secrets.REGISTRY_LOGIN_SERVER }}/frontend:${{ github.sha }}
+        registry-login-server: ${{ secrets.REGISTRY_LOGIN_SERVER }}
+        registry-username: ${{ secrets.REGISTRY_USERNAME }}
+        registry-password: ${{ secrets.REGISTRY_PASSWORD }}
+        name: aci-frontend
+        location: 'northeurope'
+        environment-variables: |
+          FRONTEND_ENV=${{ secrets.FRONTEND_ENV }}
