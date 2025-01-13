@@ -4,27 +4,28 @@ name: Frontend_Container_Workflow
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+
     steps:
     
     # Stap 1: GitHub-repository ophalen
     - name: 'Checkout GitHub Action'
       uses: actions/checkout@main
 
-    # Stap 2: Inloggen via Azure CLI
+    # Stap 2: Login via Azure CLI (gebruik je service principal credentials)
     - name: 'Login via Azure CLI'
       uses: azure/login@v1
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
     
-    # Stap 3: Inloggen bij Azure Container Registry
+    # Stap 3: Login naar Azure Container Registry
     - name: 'Login to Azure Container Registry'
       uses: azure/docker-login@v1
       with:
         login-server: ${{ secrets.REGISTRY_LOGIN_SERVER }}
         username: ${{ secrets.REGISTRY_USERNAME }}
         password: ${{ secrets.REGISTRY_PASSWORD }}
-    
-    # Stap 4: Bouw de container en push naar ACR
+
+    # Stap 4: Docker image bouwen en pushen
     - run: |
         docker build -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/frontend:${{ github.sha }} ./frontend
         docker push ${{ secrets.REGISTRY_LOGIN_SERVER }}/frontend:${{ github.sha }}
