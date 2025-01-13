@@ -5,7 +5,7 @@ FROM nginx:alpine
 RUN rm /usr/share/nginx/html/*
 
 # Kopieer het nginx.conf bestand naar de container
-COPY frontend/nginx.conf /etc/nginx/nginx.conf
+COPY nginx.conf /etc/nginx/nginx.conf
 
 # Kopieer de frontend-bestanden naar de juiste locatie voor nginx
 COPY frontend /usr/share/nginx/html
