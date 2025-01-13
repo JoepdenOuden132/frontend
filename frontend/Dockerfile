@@ -1,5 +1,5 @@
 # Gebruik een specifieke versie van nginx:alpine
-FROM nginx:alpine3.16
+FROM nginx:alpine
 
 # Verwijder bestaande bestanden in de Nginx HTML map
 RUN rm /usr/share/nginx/html/*
