@@ -1,0 +1,44 @@
+name: Build and Deploy Frontend Container to Azure
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    # Checkout de repository
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    # Set up Docker
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v1
+
+    # Log in bij Azure Container Registry (gebruik Azure login)
+    - name: Log in to Azure Container Registry
+      uses: azure/docker-login@v1
+      with:
+        username: ${{ secrets.AZURE_REGISTRY_USERNAME }}
+        password: ${{ secrets.AZURE_REGISTRY_PASSWORD }}
+
+    # Build frontend container
+    - name: Build frontend container
+      run: |
+        docker build -t ${{ secrets.AZURE_REGISTRY_NAME }}.azurecr.io/frontend:latest ./frontend
+        docker push ${{ secrets.AZURE_REGISTRY_NAME }}.azurecr.io/frontend:latest
+
+    # Deploy to Azure Container Instances (ACI)
+    - name: Deploy frontend to Azure Container Instances
+      run: |
+        az container create --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} \
+                            --name frontend-container \
+                            --image ${{ secrets.AZURE_REGISTRY_NAME }}.azurecr.io/frontend:latest \
+                            --cpu 1 --memory 1.5 --dns-name-label frontend-container \
+                            --port 80 --environment-variables NODE_ENV=production
