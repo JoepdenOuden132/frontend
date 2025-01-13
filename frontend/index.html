@@ -26,7 +26,7 @@
       }
   
       try {
-        const response = await fetch('RG-paymentsystem23.northeurope.azurecontainer.io', {  // Zorg ervoor dat je HTTPS gebruikt
+        const response = await fetch('RG-paymentsystem23.northeurope.azurecontainer.io/api/endpoint', {  // Zorg ervoor dat je HTTPS gebruikt
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
