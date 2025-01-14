@@ -1,10 +1,13 @@
 
 <form id="payment-form">
     <input type="text" id="payment-id" placeholder="Payment ID" required />
+    <input type="text" id="reservation-id" placeholder="Reservation ID" required />
     <input type="number" id="amount" placeholder="Amount" required min="0.01" step="0.01" />
-    <input type="date" id="payment-date" placeholder="Date" required /> 
+    <input type="date" id="payment-date" placeholder="Date" required />
+    <input type="text" id="currency" placeholder="Currency" required value="USD" />
+    <input type="text" id="status" placeholder="Status" />
     <button type="submit">Betalen</button>
-  </form>
+   </form>
   
   <div id="message"></div> 
   
@@ -13,17 +16,21 @@
       e.preventDefault();
   
       const paymentData = {
-        paymentId: document.getElementById('payment-id').value,
+        id: document.getElementById('payment-id').value,
+        reservationId: document.getElementById('reservation-id').value, 
         amount: parseFloat(document.getElementById('amount').value),
-        date: document.getElementById('payment-date').value, 
-        currency: "USD"
+        status: document.getElementById('status').value, 
+        currency: document.getElementById('currency').value, 
+        paymentDate: document.getElementById('payment-date').value
+
       };
   
       // Formuliervalidatie
-      if (!paymentData.paymentId || !paymentData.amount || parseFloat(paymentData.amount) <= 0 || !paymentData.date) {
-        document.getElementById('message').textContent = "Voer een geldig betalings-ID, bedrag en datum in.";
+      if (!paymentData.reservationId || !paymentData.amount || parseFloat(paymentData.amount) <= 0 || !paymentData.paymentDate) {
+        document.getElementById('message').textContent = "Voer een geldig betalings-ID, reserverings-ID, bedrag en datum in.";
         return;
-      }
+       }
+
   
       try {
         const response = await fetch('http://rg-paymentsystem1.northeurope.azurecontainer.io/api/payments', { 
