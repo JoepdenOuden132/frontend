@@ -31,14 +31,18 @@ jobs:
         docker push ${{ secrets.REGISTRY_LOGIN_SERVER }}/frontend:${{ github.sha }}
 
     # Stap 5: Deploy de container naar Azure Container Instances (ACI)
-    - name: 'Deploy to Azure Container Instances'
-      uses: azure/aci-deploy@v1
-      with:
-        resource-group: ${{ secrets.AZURE_RESOURCE_GROUP }}
-        dns-name-label: ${{ secrets.AZURE_RESOURCE_GROUP }}
-        image: ${{ secrets.REGISTRY_LOGIN_SERVER }}/frontend:${{ github.sha }}
-        registry-login-server: ${{ secrets.REGISTRY_LOGIN_SERVER }}
-        registry-username: ${{ secrets.AZURE_REGISTRY_USERNAME }}
-        registry-password: ${{ secrets.AZURE_REGISTRY_PASSWORD }}
-        name: aci-frontend
-        location: 'northeurope'
+    - name: 'Deploy to Azure Container Instances in VNet'
+      run: |
+        az container create \
+          --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} \
+          --name aci-frontend \
+          --image ${{ secrets.REGISTRY_LOGIN_SERVER }}/frontend:${{ github.sha }} \
+          --cpu 1 \
+          --memory 2.0 \
+          --vnet ${{ secrets.VNET_NAME }} \
+          --subnet ${{ secrets.SUBNET_NAME }} \
+          --os-type Linux \
+          --registry-login-server ${{ secrets.REGISTRY_LOGIN_SERVER }} \
+          --registry-username ${{ secrets.AZURE_REGISTRY_USERNAME }} \
+          --registry-password ${{ secrets.AZURE_REGISTRY_PASSWORD }} \
+          --location northeurope
