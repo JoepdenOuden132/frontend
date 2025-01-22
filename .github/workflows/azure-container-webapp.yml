@@ -29,14 +29,6 @@ jobs:
     - run: |
         docker build -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/frontend:${{ github.sha }} ./frontend
         docker push ${{ secrets.REGISTRY_LOGIN_SERVER }}/frontend:${{ github.sha }}
-    # Stap 5: Verwijder de bestaande Container Instance (indien aanwezig)
-    - name: 'Remove Existing Container Instance'
-      run: |
-        az container delete \
-          --name aci-frontend \
-          --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} \
-          --yes
-
     # Stap 6: Deploy de nieuwe Container Group met twee containers
     - name: 'Deploy to Azure Container Instance with multiple containers'
       run: |
