@@ -53,7 +53,88 @@ jobs:
         --memory 1.5 \
         --ip-address Public \
         --restart-policy Always \
-        --container-name container1 \
-        --image ${{ secrets.REGISTRY_LOGIN_SERVER }}/frontend:${{ github.sha }} \
-        --container-name container2 \
-        --image ${{ secrets.REGISTRY_LOGIN_SERVER }}/frontend:${{ github.sha }}
+        --containers '[
+            {
+              "name": "container1",
+              "image": "${{ secrets.REGISTRY_LOGIN_SERVER }}/frontend:${{ github.sha }}",
+              "resources": {
+                "requests": {
+                  "cpu": 1,
+                  "memoryInGB": 1.5
+                }
+              }
+            },
+            {
+              "name": "container2",
+              "image": "${{ secrets.REGISTRY_LOGIN_SERVER }}/frontend:${{ github.sha }}",
+              "resources": {
+                "requests": {
+                  "cpu": 1,
+                  "memoryInGB": 1.5
+                }
+              }
+            }
+          ]'--containers '[
+            {
+              "name": "container1",
+              "image": "${{ secrets.REGISTRY_LOGIN_SERVER }}/frontend:${{ github.sha }}",
+              "resources": {
+                "requests": {
+                  "cpu": 1,
+                  "memoryInGB": 1.5
+                }
+              }
+            },
+            {
+              "name": "container2",
+              "image": "${{ secrets.REGISTRY_LOGIN_SERVER }}/frontend:${{ github.sha }}",
+              "resources": {
+                "requests": {
+                  "cpu": 1,
+                  "memoryInGB": 1.5
+                }
+              }
+            }
+          ]'--containers '[
+            {
+              "name": "container1",
+              "image": "${{ secrets.REGISTRY_LOGIN_SERVER }}/frontend:${{ github.sha }}",
+              "resources": {
+                "requests": {
+                  "cpu": 1,
+                  "memoryInGB": 1.5
+                }
+              }
+            },
+            {
+              "name": "container2",
+              "image": "${{ secrets.REGISTRY_LOGIN_SERVER }}/frontend:${{ github.sha }}",
+              "resources": {
+                "requests": {
+                  "cpu": 1,
+                  "memoryInGB": 1.5
+                }
+              }
+            }
+          ]'--containers '[
+            {
+              "name": "container1",
+              "image": "${{ secrets.REGISTRY_LOGIN_SERVER }}/frontend:${{ github.sha }}",
+              "resources": {
+                "requests": {
+                  "cpu": 1,
+                  "memoryInGB": 1.5
+                }
+              }
+            },
+            {
+              "name": "container2",
+              "image": "${{ secrets.REGISTRY_LOGIN_SERVER }}/frontend:${{ github.sha }}",
+              "resources": {
+                "requests": {
+                  "cpu": 1,
+                  "memoryInGB": 1.5
+                }
+              }
+            }
+          ]'
