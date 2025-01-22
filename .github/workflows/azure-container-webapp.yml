@@ -44,7 +44,6 @@ jobs:
           --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} \
           --name aci-frontend-group \
           --image ${{ secrets.REGISTRY_LOGIN_SERVER }}/frontend:${{ github.sha }} \
-          --image <second-image> \
           --container-name container1 \
           --container-name container2 \
           --cpu 1 \
