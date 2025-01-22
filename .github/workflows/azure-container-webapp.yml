@@ -1,3 +1,4 @@
+
 on: [push]
 name: Frontend_Container_Workflow
 
@@ -29,20 +30,15 @@ jobs:
     - run: |
         docker build -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/frontend:${{ github.sha }} ./frontend
         docker push ${{ secrets.REGISTRY_LOGIN_SERVER }}/frontend:${{ github.sha }}
-    # Stap 6: Deploy de nieuwe Container Group met twee containers
-    - name: 'Deploy to Azure Container Instance with multiple containers'
-      run: |
-        az container create \
-          --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} \
-          --name aci-frontend \
-          --location northeurope \
-          --image ${{ secrets.REGISTRY_LOGIN_SERVER }}/frontend:${{ github.sha }} \
-          --image ${{ secrets.REGISTRY_LOGIN_SERVER }}/backend:${{ github.sha }} \
-          --cpu 1 \
-          --memory 2.0 \
-          --ports 80 \
-          --registry-login-server ${{ secrets.REGISTRY_LOGIN_SERVER }} \
-          --registry-username ${{ secrets.AZURE_REGISTRY_USERNAME }} \
-          --registry-password ${{ secrets.AZURE_REGISTRY_PASSWORD }} \
-          --dns-name-label ${{ secrets.AZURE_RESOURCE_GROUP }} \
-          --os-type Linux
+    # Stap 5: Deploy de container naar Azure Container Instances (ACI)
+    - name: 'Deploy to Azure Container Instances'
+      uses: azure/aci-deploy@v1
+      with:
+        resource-group: ${{ secrets.AZURE_RESOURCE_GROUP }}
+        dns-name-label: ${{ secrets.AZURE_RESOURCE_GROUP }}
+        image: ${{ secrets.REGISTRY_LOGIN_SERVER }}/frontend:${{ github.sha }}
+        registry-login-server: ${{ secrets.REGISTRY_LOGIN_SERVER }}
+        registry-username: ${{ secrets.AZURE_REGISTRY_USERNAME }}
+        registry-password: ${{ secrets.AZURE_REGISTRY_PASSWORD }}
+        name: aci-frontend2
+        location: 'northeurope'
