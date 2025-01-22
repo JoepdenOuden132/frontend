@@ -52,3 +52,5 @@ jobs:
           --name container1 \
           --image ${{ secrets.REGISTRY_LOGIN_SERVER }}/frontend:${{ github.sha }} \
           --name container2  
+          --registry-username ${{ secrets.AZURE_REGISTRY_USERNAME }} \
+          --registry-password ${{ secrets.AZURE_REGISTRY_PASSWORD }}
