@@ -48,6 +48,5 @@ jobs:
           --os-type Linux \
           --dns-name-label aci-frontend-group \
           --ports 80
-          --image ${{ secrets.REGISTRY_LOGIN_SERVER }}/frontend:${{ github.sha }} \
           --containers name=container1,image=${{ secrets.REGISTRY_LOGIN_SERVER }}/frontend:${{ github.sha }} \
           --containers name=container2,image=${{ secrets.REGISTRY_LOGIN_SERVER }}/frontend:${{ github.sha }}
