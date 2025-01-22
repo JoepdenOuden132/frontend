@@ -41,16 +41,19 @@ jobs:
     - name: 'Deploy New Container Group with Two Containers'
       run: |
         az container create \
-          --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} \
-          --name aci-frontend-group \
-          --cpu 1 \
-          --memory 1.5 \
-          --os-type Linux \
-          --dns-name-label aci-frontend-group \
-          --ports 80 \
-          --image ${{ secrets.REGISTRY_LOGIN_SERVER }}/frontend:${{ github.sha }} \
-          --name container1 \
-          --image ${{ secrets.REGISTRY_LOGIN_SERVER }}/frontend:${{ github.sha }} \
-          --name container2  
-          --registry-username ${{ secrets.AZURE_REGISTRY_USERNAME }} \
-          --registry-password ${{ secrets.AZURE_REGISTRY_PASSWORD }}
+        --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} \
+        --name aci-frontend-group \
+        --os-type Linux \
+        --dns-name-label aci-frontend-group \
+        --ports 80 \
+        --registry-login-server ${{ secrets.REGISTRY_LOGIN_SERVER }} \
+        --registry-username ${{ secrets.AZURE_REGISTRY_USERNAME }} \
+        --registry-password ${{ secrets.AZURE_REGISTRY_PASSWORD }} \
+        --cpu 1 \
+        --memory 1.5 \
+        --ip-address Public \
+        --restart-policy Always \
+        --container-name container1 \
+        --image ${{ secrets.REGISTRY_LOGIN_SERVER }}/frontend:${{ github.sha }} \
+        --container-name container2 \
+        --image ${{ secrets.REGISTRY_LOGIN_SERVER }}/frontend:${{ github.sha }}
