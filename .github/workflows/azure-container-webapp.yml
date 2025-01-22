@@ -53,3 +53,4 @@ jobs:
           --registry-username ${{ secrets.AZURE_REGISTRY_USERNAME }} \
           --registry-password ${{ secrets.AZURE_REGISTRY_PASSWORD }} \
           --dns-name-label ${{ secrets.AZURE_RESOURCE_GROUP }}
+          --os-type Linux
