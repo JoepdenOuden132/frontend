@@ -29,15 +29,26 @@ jobs:
     - run: |
         docker build -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/frontend:${{ github.sha }} ./frontend
         docker push ${{ secrets.REGISTRY_LOGIN_SERVER }}/frontend:${{ github.sha }}
-    # Stap 5: Deploy de container naar Azure Container Instances (ACI)
-    - name: 'Deploy to Azure Container Instances'
-      uses: azure/aci-deploy@v1
-      with:
-        resource-group: ${{ secrets.AZURE_RESOURCE_GROUP }}
-        dns-name-label: ${{ secrets.AZURE_RESOURCE_GROUP }}
-        image: ${{ secrets.REGISTRY_LOGIN_SERVER }}/frontend:${{ github.sha }}
-        registry-login-server: ${{ secrets.REGISTRY_LOGIN_SERVER }}
-        registry-username: ${{ secrets.AZURE_REGISTRY_USERNAME }}
-        registry-password: ${{ secrets.AZURE_REGISTRY_PASSWORD }}
-        name: aci-frontend
-        location: 'northeurope'
+    # Stap 5: Verwijder de bestaande Container Instance (indien aanwezig)
+    - name: 'Remove Existing Container Instance'
+      run: |
+        az container delete \
+          --name aci-frontend \
+          --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} \
+          --yes
+
+    # Stap 6: Deploy de nieuwe Container Group met twee containers
+    - name: 'Deploy New Container Group with Two Containers'
+      run: |
+        az container create \
+          --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} \
+          --name aci-frontend-group \
+          --image ${{ secrets.REGISTRY_LOGIN_SERVER }}/frontend:${{ github.sha }} \
+          --image <second-image> \
+          --container-name container1 \
+          --container-name container2 \
+          --cpu 1 \
+          --memory 1.5 \
+          --os-type Linux \
+          --dns-name-label aci-frontend-group \
+          --ports 80
